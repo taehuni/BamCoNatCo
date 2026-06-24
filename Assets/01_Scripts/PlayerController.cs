@@ -1,40 +1,89 @@
-using JetBrains.Annotations;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
-{
-    public float moveSpeed; //이동속도
-    public int playHp; //플레이어 체력
-    public int playerMaxHp; //플레이어 최대 체력(초과불가)
+{   
+    [Header("플레이어 이동")]
+    public float moveSpeed = 5f; //이동 속도
+    [Header("플레이어 점프")]
+    public float jumpForce = 7f; //점프 힘
+    public float gravity = -20f; //중력
+    [Header("카메라")]
     public Camera mainCam; //메인 카메라
-    public float rotateSpeed; //회전 속도
+    [Header("플레이어 사격")]
+    public PlayerShoot playerShoot;
 
-    private CharacterController controller;
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+
+    private float verticalVelocity;
+    private CharacterController controller; //자기의 CharacterController
+
     void Start()
     {
-        controller = GetComponent<CharacterController>();//자기의 CharacterController 가져와
+        playerShoot = GetComponent<PlayerShoot>();
+        controller = GetComponent<CharacterController>(); //자기의 CharacterController가져와
+        mainCam = Camera.main; //메인 카메라 가져와
     }
 
-    // Update is called once per frame
     void Update()
     {
-        PlayerMove();
+        PlayerRun();
+        PlayerMoveAndRotate();
     }
 
-    public void PlayerMove() //플레이어 이동함수
+    //플레이어 이동 + 회전
+    public void PlayerMoveAndRotate()
     {
-        float horizontal = Input.GetAxis("Horizontal"); //좌우 ad
-        float vertical = Input.GetAxis("Vertical"); //상하 ws
-        Vector3 moveDir = new Vector3(horizontal, 0, vertical).normalized; //방향값 가져와
-        if (moveDir.magnitude > 1f)
+        //카메라의 좌우 이동을 플레이어한테 반응
+        float cameraY = mainCam.transform.eulerAngles.y;
+        transform.rotation = Quaternion.Euler(0f, cameraY, 0f);
+
+        //상하좌우 이동 받기
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+
+        //카메라에 방향 가져와 앞,우
+        Vector3 forward = mainCam.transform.forward;
+        Vector3 right = mainCam.transform.right;
+
+        //y측 값이 없음(하늘에 올아가기 제한)
+        forward.y = 0f;
+        right.y = 0f;
+        //초기화
+        forward.Normalize();
+        right.Normalize();
+
+        //이동방향 계산
+        Vector3 moveDir = (forward * vertical + right * horizontal).normalized;
+
+
+        if (controller.isGrounded)
         {
-            moveDir.Normalize(); //방향값 1초과이면 1로 초기화(wa 같은 2키누릴때 같은 속도)
+            //작은 종력이 주고 지면에 안정하게 있게
+            verticalVelocity = -1f;
+
+            //space 누를 때
+            if (Input.GetKeyDown(KeyCode.Space) && !playerShoot.isPrecisionMode)
+            {
+                verticalVelocity = jumpForce;
+            }
         }
 
-        Vector3 velocity = moveDir * moveSpeed; //moveSpeed
-        controller.Move(velocity * Time.deltaTime); //이동
+        verticalVelocity += gravity * Time.deltaTime;
+        Vector3 finalMove = moveDir * moveSpeed;
+        finalMove.y = verticalVelocity;
+
+        controller.Move(finalMove * Time.deltaTime);
     }
 
+    public void PlayerRun()
+    {
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            moveSpeed = 10f;
+        }
+        else
+        {
+            moveSpeed = 5f;
+        }
+    }
 }

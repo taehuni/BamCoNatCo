@@ -550,7 +550,7 @@ GameObject:
   - component: {fileID: 1014226165}
   - component: {fileID: 1014226164}
   - component: {fileID: 1014226163}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: TestEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -767,6 +767,7 @@ GameObject:
   - component: {fileID: 1749685031}
   - component: {fileID: 1749685030}
   - component: {fileID: 1749685036}
+  - component: {fileID: 1749685037}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -929,6 +930,36 @@ MonoBehaviour:
   precisionHeight: 0.4
   precisionShoulderOffset: 0.65
   isPrecisionMode: 0
+  buildingSystem: {fileID: 0}
+--- !u!114 &1749685037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1749685029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd6b8b732e5dc644098702beaa26c552, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BuildingSystem
+  mainCam: {fileID: 0}
+  wallPrefab: {fileID: 4532783231396865526, guid: 4bf6492300b9a024ead8fd240b05b94b, type: 3}
+  towerPrefab: {fileID: 3113098753654139490, guid: e414f223729f13d4ea7d57cd5f846dfe, type: 3}
+  buildDistance: 10
+  buildRayLayer:
+    serializedVersion: 2
+    m_Bits: 200
+  isBuildMode: 0
+  gridSize: 1
+  checkBoxScale: 0.95
+  checkBoxHalfSize: {x: 0.45, y: 0.45, z: 0.45}
+  blockedLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  canBuildMaterial: {fileID: 2100000, guid: c8a43cd985aaeae48814fb7aa46557d3, type: 2}
+  cannotBuildMaterial: {fileID: 2100000, guid: 4b0f0e8271c211b40bd8a4b3f01d0808, type: 2}
+  rotateAngle: 90
 --- !u!1 &1807840200
 GameObject:
   m_ObjectHideFlags: 0
@@ -1095,7 +1126,7 @@ GameObject:
   - component: {fileID: 1967769476}
   - component: {fileID: 1967769475}
   - component: {fileID: 1967769474}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground
   m_TagString: Ground
   m_Icon: {fileID: 0}

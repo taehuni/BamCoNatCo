@@ -21,7 +21,7 @@ public class PlayerShoot : MonoBehaviour
     private bool switchModeAfterBurst; //burst 도중 모드 변환 체크
 
     public bool isPrecisionMode;          // 当前是否处于精准射击状态 정밀 사격 상태
-
+    public BuildingSystem buildingSystem;
     void Start()
     {
         mainCam = Camera.main;
@@ -57,10 +57,15 @@ public class PlayerShoot : MonoBehaviour
 
     void Update()
     {
+        if (buildingSystem != null && buildingSystem.isBuildMode)
+        {
+            return;
+        }
 
         UpdatePrecisionMode();//정밀 사격
         HandleFireInput();//사격 모드
         HandleFireModeSwitch();//사격 모드 전환
+
     }
 
     void HandleFireModeSwitch()

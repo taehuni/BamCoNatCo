@@ -6,16 +6,17 @@ TagManager:
   tags:
   - Ground
   - Enemy
+  - Building
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Wall
+  - PlayerBuilding
+  - Enemy
   - 
   - 
   - 

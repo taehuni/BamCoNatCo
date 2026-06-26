@@ -57,7 +57,8 @@ public class PlayerShoot : MonoBehaviour
 
     void Update()
     {
-        if (buildingSystem != null && buildingSystem.isBuildMode)
+        if (buildingSystem != null &&
+        (buildingSystem.isBuildMode || buildingSystem.isRemoveMode))
         {
             return;
         }

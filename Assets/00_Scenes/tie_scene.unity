@@ -956,7 +956,11 @@ MonoBehaviour:
   checkBoxHalfSize: {x: 0.45, y: 0.45, z: 0.45}
   blockedLayer:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 384
+  isRemoveMode: 0
+  removeRayLayer:
+    serializedVersion: 2
+    m_Bits: 0
   canBuildMaterial: {fileID: 2100000, guid: c8a43cd985aaeae48814fb7aa46557d3, type: 2}
   cannotBuildMaterial: {fileID: 2100000, guid: 4b0f0e8271c211b40bd8a4b3f01d0808, type: 2}
   rotateAngle: 90

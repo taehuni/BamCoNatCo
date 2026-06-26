@@ -12,9 +12,15 @@ public class BuildingSystem : MonoBehaviour
     public LayerMask buildRayLayer;
     public bool isBuildMode;
     public float gridSize = 1f;
-    public float checkBoxScale = 0.95f;
+    public float checkBoxScale = 0.98f;
     public Vector3 checkBoxHalfSize = new Vector3(0.45f, 0.45f, 0.45f);
     public LayerMask blockedLayer;
+
+    public bool isRemoveMode;
+    public LayerMask removeRayLayer;
+    private BuildingObject currentRemoveTarget;
+    private Renderer[] removeTargetRenderers;
+    private Material[][] removeTargetOriginalMaterials;
 
 
     private bool canBuild;
@@ -23,6 +29,8 @@ public class BuildingSystem : MonoBehaviour
     private Vector3 currentBuildPosition;
     public float rotateAngle = 90f;
     private float currentRotationY;
+
+
 
     void Start()
     {
@@ -35,36 +43,156 @@ public class BuildingSystem : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.B))
+        HandleModeSwitch();
+
+        if (isBuildMode)
+        {
+            HandleBuildingSelection(); //건축 선택
+            UpdatePreview(); //미리보기
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                RotatePreview(); //미리보기 회전
+            }
+
+            if (Input.GetMouseButtonDown(0) && canBuild)
+            {
+                TryBuild(); //건조시도
+            }
+        }
+
+        if (isRemoveMode) //건조 삭제 모드
+        {
+            UpdateRemovePreview();
+            if (Input.GetMouseButtonDown(0))
+            {
+                TryRemoveBuilding(); //삭제 시도
+            }
+        }
+    }
+
+    void HandleModeSwitch()
+    {
+        if (Input.GetKeyDown(KeyCode.B))  //b키 누르면 건조모드 전환
         {
             isBuildMode = !isBuildMode;
 
             if (isBuildMode)
             {
+                isRemoveMode = false;
+                ClearRemoveTarget();
                 CreatePreview();
             }
             else
             {
+                currentRotationY = 0f;
                 DestroyPreview();
                 currentRotationY = 0f;
             }
         }
 
-        if (isBuildMode)
+        if (Input.GetKeyDown(KeyCode.X)) //x키 누르면 삭제 모드 전환
         {
-            HandleBuildingSelection();
-            UpdatePreview();
+            isRemoveMode = !isRemoveMode;
 
-            if (Input.GetKeyDown(KeyCode.R))
+            if (isRemoveMode)
             {
-                RotatePreview();
+                isBuildMode = false;
+                currentRotationY = 0f;
+                DestroyPreview();
             }
-
-            if (Input.GetMouseButtonDown(0) && canBuild)
+            else
             {
-                TryBuild();
+                ClearRemoveTarget();
             }
         }
+    }
+
+    void UpdateRemovePreview()
+    {
+        Ray ray = mainCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, buildDistance, removeRayLayer))
+        {
+            BuildingObject building = hit.collider.GetComponentInParent<BuildingObject>();
+
+            if (building != null)
+            {
+                SetRemoveTarget(building);
+                return;
+            }
+        }
+
+        ClearRemoveTarget();
+    }
+
+    void SetRemoveTarget(BuildingObject building)
+    {
+        if (currentRemoveTarget == building)
+        {
+            return;
+        }
+
+        ClearRemoveTarget();
+
+        currentRemoveTarget = building;
+
+        removeTargetRenderers = currentRemoveTarget.GetComponentsInChildren<Renderer>();
+
+        removeTargetOriginalMaterials = new Material[removeTargetRenderers.Length][];
+
+        for (int i = 0; i < removeTargetRenderers.Length; i++)
+        {
+            removeTargetOriginalMaterials[i] = removeTargetRenderers[i].materials;
+
+            Material[] redMaterials = new Material[removeTargetRenderers[i].materials.Length];
+
+            for (int j = 0; j < redMaterials.Length; j++)
+            {
+                redMaterials[j] = cannotBuildMaterial;
+            }
+
+            removeTargetRenderers[i].materials = redMaterials;
+        }
+    }
+
+    void ClearRemoveTarget()
+    {
+        if (currentRemoveTarget == null)
+        {
+            return;
+        }
+
+        if (removeTargetRenderers != null && removeTargetOriginalMaterials != null)
+        {
+            for (int i = 0; i < removeTargetRenderers.Length; i++)
+            {
+                if (removeTargetRenderers[i] != null)
+                {
+                    removeTargetRenderers[i].materials = removeTargetOriginalMaterials[i];
+                }
+            }
+        }
+
+        currentRemoveTarget = null;
+        removeTargetRenderers = null;
+        removeTargetOriginalMaterials = null;
+    }
+
+    void TryRemoveBuilding()
+    {
+        if (currentRemoveTarget == null)
+        {
+            return;
+        }
+
+        Destroy(currentRemoveTarget.gameObject);
+
+        currentRemoveTarget = null;
+        removeTargetRenderers = null;
+        removeTargetOriginalMaterials = null;
     }
 
 
@@ -234,17 +362,30 @@ public class BuildingSystem : MonoBehaviour
     //건조 위치에서 충돌 판단
     bool IsPositionBlocked()
     {
-        Renderer renderer = previewBuilding.GetComponentInChildren<Renderer>();
+        BoxCollider box = previewBuilding.GetComponentInChildren<BoxCollider>();
 
-        if (renderer == null)
+        if (box == null)
         {
-            return Physics.CheckBox(currentBuildPosition, checkBoxHalfSize, Quaternion.identity, blockedLayer);
+            return Physics.CheckBox(
+                previewBuilding.transform.position,
+                checkBoxHalfSize,
+                previewBuilding.transform.rotation,
+                blockedLayer,
+                QueryTriggerInteraction.Collide
+            );
         }
 
-        Vector3 center = renderer.bounds.center;
-        Vector3 halfSize = renderer.bounds.size / 2f * checkBoxScale;
+        Vector3 center = box.transform.TransformPoint(box.center);
 
-        return Physics.CheckBox(center, halfSize, previewBuilding.transform.rotation, blockedLayer);
+        Vector3 halfSize = Vector3.Scale(box.size, box.transform.lossyScale) / 2f * checkBoxScale;
+
+        return Physics.CheckBox(
+            center,
+            halfSize,
+            box.transform.rotation,
+            blockedLayer,
+            QueryTriggerInteraction.Collide
+        );
     }
 
     //미리보기 회전

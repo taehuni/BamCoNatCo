@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     public Camera mainCam; //메인 카메라
     [Header("플레이어 사격")]
     public PlayerShoot playerShoot;
-
+    
     private float verticalVelocity;
     private CharacterController controller; //자기의 CharacterController
 

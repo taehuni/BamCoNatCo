@@ -3,32 +3,31 @@ using UnityEngine;
 public class BuildingSystem : MonoBehaviour
 {
     public Camera mainCam;
-    public GameObject wallPrefab;
-    public GameObject towerPrefab;
-    private GameObject currentBuildingPrefab;
-    private GameObject previewBuilding;
-    public float buildDistance = 10f;
+    public GameObject wallPrefab; //벽 소재
+    public GameObject towerPrefab; //타워 소재
+    private GameObject currentBuildingPrefab; //현재 건조할 건축
+    private GameObject previewBuilding; //미리보기 temp
+    public float buildDistance = 10f; //건조 범위
 
-    public LayerMask buildRayLayer;
-    public bool isBuildMode;
-    public float gridSize = 1f;
-    public float checkBoxScale = 0.98f;
-    public Vector3 checkBoxHalfSize = new Vector3(0.45f, 0.45f, 0.45f);
-    public LayerMask blockedLayer;
+    public LayerMask buildRayLayer; //건조 조건 layer
+    public bool isBuildMode; //건조 모드
+    public float gridSize = 1f; //가이드 사이즈
+    public float checkBoxScale = 0.98f; //충돌 판단 크기
+    public Vector3 checkBoxHalfSize = new Vector3(0.45f, 0.45f, 0.45f); //충돌 판단 default 크기(대상 못 찾는 경우)
+    public LayerMask blockedLayer; //충돌 대상의 layer
+    private bool canBuild; //건조 가능할까?
+    public Material canBuildMaterial; //건조 가능할때 재질
+    public Material cannotBuildMaterial; //건조 불가능할때 재질
+    private Vector3 currentBuildPosition; //건조 위치
+    public float rotateAngle = 90f; //건조 화전각도
+    private float currentRotationY; //현재 각도
 
-    public bool isRemoveMode;
-    public LayerMask removeRayLayer;
-    private BuildingObject currentRemoveTarget;
-    private Renderer[] removeTargetRenderers;
-    private Material[][] removeTargetOriginalMaterials;
+    public bool isRemoveMode; //삭제 모드
+    public LayerMask removeRayLayer; //삭제 대상의 layer
+    private BuildingObject currentRemoveTarget; //현재 삭제할 대상
+    private Renderer[] removeTargetRenderers; //대상의 renderers
+    private Material[][] removeTargetOriginalMaterials; //원래 대상의 materials
 
-
-    private bool canBuild;
-    public Material canBuildMaterial;
-    public Material cannotBuildMaterial;
-    private Vector3 currentBuildPosition;
-    public float rotateAngle = 90f;
-    private float currentRotationY;
 
 
 
@@ -38,12 +37,12 @@ public class BuildingSystem : MonoBehaviour
         {
             mainCam = Camera.main;
         }
-        currentBuildingPrefab = wallPrefab;
+        currentBuildingPrefab = wallPrefab; //default wall시작
     }
 
     void Update()
     {
-        HandleModeSwitch();
+        HandleModeSwitch(); //모드 전화
 
         if (isBuildMode)
         {
@@ -63,7 +62,7 @@ public class BuildingSystem : MonoBehaviour
 
         if (isRemoveMode) //건조 삭제 모드
         {
-            UpdateRemovePreview();
+            UpdateRemovePreview(); //삭제 대상 재질 변경
             if (Input.GetMouseButtonDown(0))
             {
                 TryRemoveBuilding(); //삭제 시도
@@ -71,6 +70,7 @@ public class BuildingSystem : MonoBehaviour
         }
     }
 
+    //모드전환 건조 - 삭제
     void HandleModeSwitch()
     {
         if (Input.GetKeyDown(KeyCode.B))  //b키 누르면 건조모드 전환
@@ -79,15 +79,14 @@ public class BuildingSystem : MonoBehaviour
 
             if (isBuildMode)
             {
-                isRemoveMode = false;
-                ClearRemoveTarget();
-                CreatePreview();
+                isRemoveMode = false; //삭제 모드 끄기
+                ClearRemoveTarget(); //삭제 모드 재질 전화 끄기
+                CreatePreview(); //미리보기 만들어
             }
             else
             {
-                currentRotationY = 0f;
-                DestroyPreview();
-                currentRotationY = 0f;
+                currentRotationY = 0f; //회전 초기화
+                DestroyPreview(); //미리보기 끄기
             }
         }
 
@@ -97,17 +96,18 @@ public class BuildingSystem : MonoBehaviour
 
             if (isRemoveMode)
             {
-                isBuildMode = false;
-                currentRotationY = 0f;
-                DestroyPreview();
+                isBuildMode = false; //건조 모드 끄기
+                currentRotationY = 0f; //회전 초기화
+                DestroyPreview(); //미리보기 끄기
             }
             else
             {
-                ClearRemoveTarget();
+                ClearRemoveTarget(); //임시 저장한 삭제대상 초기화
             }
         }
     }
 
+    //삭제 대상 재질 변경함수
     void UpdateRemovePreview()
     {
         Ray ray = mainCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
@@ -128,6 +128,7 @@ public class BuildingSystem : MonoBehaviour
         ClearRemoveTarget();
     }
 
+    //삭제 대상의 재질등 내용 임시 저장
     void SetRemoveTarget(BuildingObject building)
     {
         if (currentRemoveTarget == building)

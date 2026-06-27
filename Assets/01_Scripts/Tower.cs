@@ -24,24 +24,24 @@ public class Tower : MonoBehaviour
         }
     }
 
-    // void Attack()
-    // {
-    //     //원형 범위에 enemy layer 있는 놈이 찾아
-    //     Collider[] enemies = Physics.OverlapSphere(transform.position, attackRange, enemyLayer);
-    //     //없으면 동작이 안해
-    //     if (enemies.Length == 0)
-    //     {
-    //         return;
-    //     }
-    //     //첫번째 찾는 놈
-    //     Collider target = enemies[0];
+    void Attack()
+    {
+        //원형 범위에 enemy layer 있는 놈이 찾아
+        Collider[] enemies = Physics.OverlapSphere(transform.position, attackRange, enemyLayer);
+        //없으면 동작이 안해
+        if (enemies.Length == 0)
+        {
+            return;
+        }
+        //첫번째 찾는 놈
+        Collider target = enemies[0];
 
-    //     EnemyAI enemy = target.GetComponent<EnemyAI>();
+        EnemyAI enemy = target.GetComponent<EnemyAI>();
 
-    //     if (enemy != null)
-    //     {
-    //         enemy.TakeDamage(damage);
-    //     }
+        if (enemy != null)
+        {
+            enemy.TakeDamage(damage);
+        }
 
-    // }
+    }
 }

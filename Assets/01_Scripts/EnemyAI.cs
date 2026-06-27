@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
-    [Header("»óÅÂ ¼³Á¤")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     public int health = 30;
     public float moveSpeed = 3f;
     public float attackRange = 2f;
 
-    [Header("ÂüÁ¶")]
-    public Weapon weapon; // °ø°ÝÇÒ ¶§ ¹«±âÀÇ µ¥¹ÌÁö °ªÀ» °¡Á®¿À±â À§ÇØ ÂüÁ¶
-    public Transform player; // ÃßÀûÇÒ ÇÃ·¹ÀÌ¾î
+    [Header("ï¿½ï¿½ï¿½ï¿½")]
+    private Weapon weapon; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public Transform player; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½
 
     private UnityEngine.AI.NavMeshAgent agent;
 
@@ -17,6 +17,7 @@ public class EnemyAI : MonoBehaviour
     {
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (agent != null) agent.speed = moveSpeed;
+        weapon = player.GetComponentInChildren<Weapon>();
     }
 
     void Update()
@@ -35,7 +36,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    // 1. ÀÌµ¿ ÇÔ¼ö
+    // 1. ï¿½Ìµï¿½ ï¿½Ô¼ï¿½
     public void Move(Vector3 targetPosition)
     {
         if (agent != null)
@@ -44,29 +45,29 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    // 2. °ø°Ý ÇÔ¼ö
+    // 2. ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
     public void Attack()
     {
-        // °ø°Ý ·ÎÁ÷ (¿¹: ¾Ö´Ï¸ÞÀÌ¼Ç Àç»ý µî)
-        Debug.Log("ÀûÀÌ °ø°ÝÇÕ´Ï´Ù!");
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½: ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½)
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½!");
     }
 
-    // 3. µ¥¹ÌÁö Ã³¸® ÇÔ¼ö
+    // 3. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½Ô¼ï¿½
     public void TakeDamage(int defaultDamage)
     {
-        Debug.Log("TakeDamage ÇÔ¼ö°¡ È£ÃâµÇ¾ú½À´Ï´Ù!"); // ÀÌ ·Î±×°¡ ÂïÈ÷³ª¿ä?
+        Debug.Log("TakeDamage ï¿½Ô¼ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½!"); // ï¿½ï¿½ ï¿½Î±×°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
 
         int damageToApply = (weapon != null) ? weapon.damage : defaultDamage;
         health -= damageToApply;
 
-        Debug.Log($"ÇöÀç Ã¼·Â: {health}");
+        Debug.Log($"ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½: {health}");
 
         if (health <= 0) Die();
     }
 
     private void Die()
     {
-        Debug.Log("ÀûÀÌ Á×¾ú½À´Ï´Ù!");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½×¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½!");
         Destroy(gameObject);
     }
 }

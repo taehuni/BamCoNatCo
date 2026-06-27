@@ -1,67 +1,79 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
 {
-    [Header("상태 설정")]
+    [Header("적군 설정")]
     public int health = 30;
     public float moveSpeed = 3f;
     public float attackRange = 2f;
+    public float attackDamage = 10f; // 공격력
+    public float attackCooldown = 1.5f; // 공격 간격
+    private float lastAttackTime;
 
     [Header("참조")]
-    private Weapon weapon; // 공격할 때 무기의 데미지 값을 가져오기 위해 참조
-    public Transform player; // 추적할 플레이어
+    public Core core; // 플레이어 대신 Core 참조
 
-    private UnityEngine.AI.NavMeshAgent agent;
+    private NavMeshAgent agent;
 
     void Start()
     {
-        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        agent = GetComponent<NavMeshAgent>();
         if (agent != null) agent.speed = moveSpeed;
+
+        // 씬에 있는 Core를 자동으로 찾고 싶다면 아래 주석을 해제하세요.
+        if (core == null) core = FindObjectOfType<Core>();
     }
 
     void Update()
     {
-        if (player == null) return;
+        if (core == null) return;
 
-        float distance = Vector3.Distance(transform.position, player.position);
+        float distance = Vector3.Distance(transform.position, core.transform.position);
 
         if (distance <= attackRange)
         {
-            Attack();
+            // 공격 범위 안에 들어오면 공격 시도
+            if (Time.time >= lastAttackTime + attackCooldown)
+            {
+                Attack();
+                lastAttackTime = Time.time;
+            }
         }
         else
         {
-            Move(player.position);
+            // Core를 향해 이동
+            Move(core.transform.position);
         }
     }
 
-    // 1. 이동 함수
     public void Move(Vector3 targetPosition)
     {
-        if (agent != null)
+        if (agent != null && agent.enabled)
         {
             agent.SetDestination(targetPosition);
         }
     }
 
-    // 2. 공격 함수
     public void Attack()
     {
-        // 공격 로직 (예: 애니메이션 재생 등)
-        Debug.Log("적이 공격합니다!");
+        Debug.Log("Core 공격!");
+        // Core의 GetDamage 함수를 호출하여 데미지 전달
+        core.GetDamage(attackDamage);
     }
 
-    // 3. 데미지 처리 함수
-    public void TakeDamage(int damage)
+    // 데미지 처리 함수
+    public void TakeDamage(int defaultDamage)
     {
-        Debug.Log("TakeDamage :" + damage);
-        health -= damage;
+        health -= defaultDamage;
+        Debug.Log($"받은 데미지: {defaultDamage}, 남은 체력: {health}");
+
         if (health <= 0) Die();
     }
 
     private void Die()
     {
-        Debug.Log("적이 죽었습니다!");
+        Debug.Log("적군이 사망했습니다!");
         Destroy(gameObject);
     }
 }

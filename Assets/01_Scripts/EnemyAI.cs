@@ -8,7 +8,7 @@ public class EnemyAI : MonoBehaviour
     public float attackRange = 2f;
 
     [Header("참조")]
-    public Weapon weapon; // 공격할 때 무기의 데미지 값을 가져오기 위해 참조
+    private Weapon weapon; // 공격할 때 무기의 데미지 값을 가져오기 위해 참조
     public Transform player; // 추적할 플레이어
 
     private UnityEngine.AI.NavMeshAgent agent;
@@ -52,15 +52,10 @@ public class EnemyAI : MonoBehaviour
     }
 
     // 3. 데미지 처리 함수
-    public void TakeDamage(int defaultDamage)
+    public void TakeDamage(int damage)
     {
-        Debug.Log("TakeDamage 함수가 호출되었습니다!"); // 이 로그가 찍히나요?
-
-        int damageToApply = (weapon != null) ? weapon.damage : defaultDamage;
-        health -= damageToApply;
-
-        Debug.Log($"현재 체력: {health}");
-
+        Debug.Log("TakeDamage :" + damage);
+        health -= damage;
         if (health <= 0) Die();
     }
 

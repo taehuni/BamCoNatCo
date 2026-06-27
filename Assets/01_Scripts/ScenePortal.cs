@@ -5,17 +5,13 @@ public class ScenePortal : MonoBehaviour
 {
     public float detectRange = 2f;
     public LayerMask playerLayer;
-    public GameObject 传送按钮;
     public string targetSceneName;
 
     private bool playerInRange;
+    private PlayerInteractUI playerUI;
 
     void Start()
     {
-        if (传送按钮 != null)
-        {
-            传送按钮.SetActive(false);
-        }
     }
 
     void Update()
@@ -34,9 +30,22 @@ public class ScenePortal : MonoBehaviour
 
         playerInRange = players.Length > 0;
 
-        if (传送按钮 != null)
+        if (playerInRange)
         {
-            传送按钮.SetActive(playerInRange);
+            playerUI = players[0].GetComponentInParent<PlayerInteractUI>();
+
+            if (playerUI != null)
+            {
+                playerUI.ShowButton("전송하기(E)");
+            }
+        }
+        else
+        {
+            if (playerUI != null)
+            {
+                playerUI.HideButton();
+                playerUI = null;
+            }
         }
     }
 

@@ -7,73 +7,70 @@ public class EnemyAI : MonoBehaviour
     public int health = 30;
     public float moveSpeed = 3f;
     public float attackRange = 2f;
-    public float attackDamage = 10f; // 공격력
-    public float attackCooldown = 1.5f; // 공격 간격
+    public float attackDamage = 10f;
+    public float attackCooldown = 1.5f;
     private float lastAttackTime;
 
-    [Header("참조")]
-    public Core core; // 플레이어 대신 Core 참조
-
     private NavMeshAgent agent;
+    private Core core;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         if (agent != null) agent.speed = moveSpeed;
-
-        // 씬에 있는 Core를 자동으로 찾고 싶다면 아래 주석을 해제하세요.
-        if (core == null) core = FindObjectOfType<Core>();
+        core = FindObjectOfType<Core>();
     }
 
     void Update()
     {
-        if (core == null) return;
+        // 1. 공격 범위 내에 BuildingObject가 있는지 탐지
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange);
+        BuildingObject targetBuilding = null;
 
-        float distance = Vector3.Distance(transform.position, core.transform.position);
-
-        if (distance <= attackRange)
+        foreach (var hit in hitColliders)
         {
-            // 공격 범위 안에 들어오면 공격 시도
+            BuildingObject building = hit.GetComponentInParent<BuildingObject>();
+            if (building != null)
+            {
+                targetBuilding = building;
+                break;
+            }
+        }
+
+        // 2. 건축물이 있으면 공격
+        if (targetBuilding != null)
+        {
+            if (agent.enabled) agent.isStopped = true;
             if (Time.time >= lastAttackTime + attackCooldown)
             {
-                Attack();
+                targetBuilding.GetDamage(attackDamage);
                 lastAttackTime = Time.time;
             }
         }
-        else
+        // 3. 없으면 코어를 향해 이동하거나 공격
+        else if (core != null)
         {
-            // Core를 향해 이동
-            Move(core.transform.position);
+            if (agent.enabled) agent.isStopped = false;
+            float distance = Vector3.Distance(transform.position, core.transform.position);
+
+            if (distance <= attackRange)
+            {
+                if (Time.time >= lastAttackTime + attackCooldown)
+                {
+                    core.GetDamage(attackDamage);
+                    lastAttackTime = Time.time;
+                }
+            }
+            else
+            {
+                agent.SetDestination(core.transform.position);
+            }
         }
     }
 
-    public void Move(Vector3 targetPosition)
-    {
-        if (agent != null && agent.enabled)
-        {
-            agent.SetDestination(targetPosition);
-        }
-    }
-
-    public void Attack()
-    {
-        Debug.Log("Core 공격!");
-        // Core의 GetDamage 함수를 호출하여 데미지 전달
-        core.GetDamage(attackDamage);
-    }
-
-    // 데미지 처리 함수
     public void TakeDamage(int defaultDamage)
     {
         health -= defaultDamage;
-        Debug.Log($"받은 데미지: {defaultDamage}, 남은 체력: {health}");
-
-        if (health <= 0) Die();
-    }
-
-    private void Die()
-    {
-        Debug.Log("적군이 사망했습니다!");
-        Destroy(gameObject);
+        if (health <= 0) Destroy(gameObject);
     }
 }

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5572463450970442262}
   - component: {fileID: 8635442865361431412}
   - component: {fileID: -72031590771419491}
+  - component: {fileID: 216560323487879410}
   m_Layer: 7
   m_Name: Tower
   m_TagString: Building
@@ -125,3 +126,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66e16581fc0416144bbbc3b66bc61c81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildingObject
+  hp: 10
+--- !u!208 &216560323487879410
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3113098753654139490}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5

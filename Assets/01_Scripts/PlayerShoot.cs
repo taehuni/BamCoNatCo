@@ -60,7 +60,7 @@ public class PlayerShoot : MonoBehaviour
         (buildingSystem.isBuildMode || buildingSystem.isRemoveMode))
         {
             return;
-        }
+        }   
 
         UpdatePrecisionMode();
         HandleFireInput();
@@ -71,13 +71,17 @@ public class PlayerShoot : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.V))
         {
+            Debug.Log("V키가 눌렸습니다. 현재 모드: " + currentWeapon.curFireMode);
+
             if (currentWeapon.curFireMode == Weapon.FireMode.Burst && burstShotsRemaining > 0)
             {
                 switchModeAfterBurst = true;
+                Debug.Log("Burst 발사 대기 중, 사격 후 변경 예약됨");
             }
             else
             {
                 currentWeapon.SwitchFireMode();
+                Debug.Log("모드 변경 실행 완료. 변경된 모드: " + currentWeapon.curFireMode);
             }
         }
     }

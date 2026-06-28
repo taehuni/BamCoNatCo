@@ -1,73 +1,76 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
 {
-    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    [Header("Àû±º ¼³Á¤")]
     public int health = 30;
     public float moveSpeed = 3f;
     public float attackRange = 2f;
+    public float attackDamage = 10f;
+    public float attackCooldown = 1.5f;
+    private float lastAttackTime;
 
-    [Header("ï¿½ï¿½ï¿½ï¿½")]
-    private Weapon weapon; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-    public Transform player; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½
-
-    private UnityEngine.AI.NavMeshAgent agent;
+    private NavMeshAgent agent;
+    private Core core;
 
     void Start()
     {
-        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        agent = GetComponent<NavMeshAgent>();
         if (agent != null) agent.speed = moveSpeed;
-        weapon = player.GetComponentInChildren<Weapon>();
+        core = FindObjectOfType<Core>();
     }
 
     void Update()
     {
-        if (player == null) return;
+        // 1. °ø°Ý ¹üÀ§ ³»¿¡ BuildingObject°¡ ÀÖ´ÂÁö Å½Áö
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange);
+        BuildingObject targetBuilding = null;
 
-        float distance = Vector3.Distance(transform.position, player.position);
-
-        if (distance <= attackRange)
+        foreach (var hit in hitColliders)
         {
-            Attack();
+            BuildingObject building = hit.GetComponentInParent<BuildingObject>();
+            if (building != null)
+            {
+                targetBuilding = building;
+                break;
+            }
         }
-        else
+
+        // 2. °ÇÃà¹°ÀÌ ÀÖÀ¸¸é °ø°Ý
+        if (targetBuilding != null)
         {
-            Move(player.position);
+            if (agent.enabled) agent.isStopped = true;
+            if (Time.time >= lastAttackTime + attackCooldown)
+            {
+                targetBuilding.GetDamage(attackDamage);
+                lastAttackTime = Time.time;
+            }
+        }
+        // 3. ¾øÀ¸¸é ÄÚ¾î¸¦ ÇâÇØ ÀÌµ¿ÇÏ°Å³ª °ø°Ý
+        else if (core != null)
+        {
+            if (agent.enabled) agent.isStopped = false;
+            float distance = Vector3.Distance(transform.position, core.transform.position);
+
+            if (distance <= attackRange)
+            {
+                if (Time.time >= lastAttackTime + attackCooldown)
+                {
+                    core.GetDamage(attackDamage);
+                    lastAttackTime = Time.time;
+                }
+            }
+            else
+            {
+                agent.SetDestination(core.transform.position);
+            }
         }
     }
 
-    // 1. ï¿½Ìµï¿½ ï¿½Ô¼ï¿½
-    public void Move(Vector3 targetPosition)
-    {
-        if (agent != null)
-        {
-            agent.SetDestination(targetPosition);
-        }
-    }
-
-    // 2. ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
-    public void Attack()
-    {
-        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½: ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½)
-        Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½!");
-    }
-
-    // 3. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½Ô¼ï¿½
     public void TakeDamage(int defaultDamage)
     {
-        Debug.Log("TakeDamage ï¿½Ô¼ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½!"); // ï¿½ï¿½ ï¿½Î±×°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
-
-        int damageToApply = (weapon != null) ? weapon.damage : defaultDamage;
-        health -= damageToApply;
-
-        Debug.Log($"ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½: {health}");
-
-        if (health <= 0) Die();
-    }
-
-    private void Die()
-    {
-        Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½×¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½!");
-        Destroy(gameObject);
+        health -= defaultDamage;
+        if (health <= 0) Destroy(gameObject);
     }
 }

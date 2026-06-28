@@ -53,15 +53,10 @@ public class EnemyAI : MonoBehaviour
     }
 
     // 3. ������ ó�� �Լ�
-    public void TakeDamage(int defaultDamage)
+    public void TakeDamage(int damage)
     {
-        Debug.Log("TakeDamage �Լ��� ȣ��Ǿ����ϴ�!"); // �� �αװ� ��������?
-
-        int damageToApply = (weapon != null) ? weapon.damage : defaultDamage;
-        health -= damageToApply;
-
-        Debug.Log($"���� ü��: {health}");
-
+        Debug.Log("TakeDamage :" + damage);
+        health -= damage;
         if (health <= 0) Die();
     }
 

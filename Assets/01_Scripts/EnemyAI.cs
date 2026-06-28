@@ -25,22 +25,26 @@ public class EnemyAI : MonoBehaviour
     {
         // 1. 공격 범위 내에 BuildingObject가 있는지 탐지
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange);
-        BuildingObject targetBuilding = null;
+        DamageableBuilding targetBuilding = null;
 
         foreach (var hit in hitColliders)
         {
-            BuildingObject building = hit.GetComponentInParent<BuildingObject>();
+            DamageableBuilding building = hit.GetComponentInParent<DamageableBuilding>();
+
             if (building != null)
             {
                 targetBuilding = building;
                 break;
             }
         }
-
         // 2. 건축물이 있으면 공격
         if (targetBuilding != null)
         {
-            if (agent.enabled) agent.isStopped = true;
+            if (agent.enabled)
+            {
+                agent.isStopped = true;
+            }
+
             if (Time.time >= lastAttackTime + attackCooldown)
             {
                 targetBuilding.GetDamage(attackDamage);

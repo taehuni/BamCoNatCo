@@ -1111,8 +1111,8 @@ MonoBehaviour:
   detectRange: 2
   playerLayer:
     serializedVersion: 2
-    m_Bits: 0
-  targetSceneName: 
+    m_Bits: 512
+  targetSceneName: jim02_Scene
 --- !u!65 &986929304
 BoxCollider:
   m_ObjectHideFlags: 0

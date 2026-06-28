@@ -36,7 +36,7 @@ public class Tower : MonoBehaviour
         //첫번째 찾는 놈
         Collider target = enemies[0];
 
-        EnemyAI enemy = target.GetComponent<EnemyAI>();
+        EnemyAI enemy = target.GetComponentInParent<EnemyAI>();
 
         if (enemy != null)
         {
@@ -44,4 +44,5 @@ public class Tower : MonoBehaviour
         }
 
     }
+
 }

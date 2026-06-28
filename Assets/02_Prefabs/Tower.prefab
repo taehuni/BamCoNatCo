@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 8635442865361431412}
   - component: {fileID: -72031590771419491}
   - component: {fileID: 216560323487879410}
+  - component: {fileID: 7229235344376794275}
+  - component: {fileID: 3841751019800861297}
   m_Layer: 7
   m_Name: Tower
   m_TagString: Building
@@ -126,7 +128,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66e16581fc0416144bbbc3b66bc61c81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildingObject
-  hp: 10
 --- !u!208 &216560323487879410
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -143,3 +144,36 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &7229235344376794275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3113098753654139490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edcf165a31c2b0a46986b28f9efdfa0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tower
+  attackRange: 10
+  attackInterval: 1
+  damage: 10
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 256
+--- !u!114 &3841751019800861297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3113098753654139490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eba2b3a16b963f43bfc15ef426f55c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageableBuilding
+  hp: 30
+  maxHp: 30
+  defensePower: 0

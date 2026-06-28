@@ -18,7 +18,7 @@ public class Tower : MonoBehaviour
     {
         if (Time.time >= nextAttackTime)
         {
-            //Attack();
+            Attack();
 
             nextAttackTime = Time.time + attackInterval;
         }

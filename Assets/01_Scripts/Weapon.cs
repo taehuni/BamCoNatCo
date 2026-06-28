@@ -45,27 +45,24 @@ public class Weapon : MonoBehaviour
         curFireMode = availableFireModes[currentModeIndex]; //사격 모드 초기화
     }
 
+    // Weapon.cs 내부
     public void SwitchFireMode()
     {
-        // 只有一种模式时，不需要切换 //한 모드 만 있으면 변경하지 않아
-        if (availableFireModes.Length <= 1)
+        switch (curFireMode)
         {
-            return;
+            case FireMode.Single:
+                curFireMode = FireMode.Auto;
+                Debug.Log("모드 변경: Single -> Auto");
+                break;
+            case FireMode.Auto:
+                curFireMode = FireMode.Burst;
+                Debug.Log("모드 변경: Auto -> Burst");
+                break;
+            case FireMode.Burst:
+                curFireMode = FireMode.Single;
+                Debug.Log("모드 변경: Burst -> Single");
+                break;
         }
-
-        // 当前数组位置加 1 //모드 리스트에 index + 1
-        currentModeIndex++;
-
-        // 到达数组末尾时，回到第一个模式 //모드 리스트 초과하면 첫 모드에 다시 돌어가
-        if (currentModeIndex >= availableFireModes.Length)
-        {
-            currentModeIndex = 0;
-        }
-
-        // 用新位置更新当前开火模式 //현재의 사격 모드 변환
-        curFireMode = availableFireModes[currentModeIndex];
-
-        Debug.Log("Now Fire Mode: " + curFireMode);
     }
 
 }
